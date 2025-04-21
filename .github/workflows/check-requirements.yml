@@ -22,10 +22,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           
-      - name: Get installed packages
+      - name: Get explicitly installed packages
         id: installed-packages
         run: |
-          pip freeze > installed_packages.txt
+          # Get only explicitly installed packages (not dependencies)
+          pip list --not-required --format=freeze > installed_packages.txt
           echo "INSTALLED_PACKAGES=$(cat installed_packages.txt)" >> $GITHUB_ENV
           
       - name: Compare with requirements.txt
