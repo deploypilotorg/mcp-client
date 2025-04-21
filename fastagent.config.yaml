@@ -4,12 +4,12 @@ mcp:
       command: "uvx"
       args: ["cli-mcp-server"]
       env:
-        ALLOWED_DIR: "/Users/edou/Documents/Uni_Work/Y3S2/Chatops/finalProject"
+        ALLOWED_DIR: "/Users/zaidalsaheb/projects/example-repo"
         ALLOWED_COMMANDS: "all"
         ALLOWED_FLAGS: "all"
         MAX_COMMAND_LENGTH: "1024"
         COMMAND_TIMEOUT: "60"
-        # GITHUB_API_KEY: "<YOUR_API_KEY>"
+        GITHUB_API_KEY: "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"
         EXAMPLE_REPO_URL: "https://github.com/deploypilotorg/example-repo"
         ALLOW_SHELL_OPERATORS: "true"
         GIT_TERMINAL_PROMPT: "0"
@@ -25,7 +25,7 @@ mcp:
         - "GITHUB_PERSONAL_ACCESS_TOKEN"
         - "ghcr.io/github/github-mcp-server"
       env:
-       # GITHUB_PERSONAL_ACCESS_TOKEN: "<YOUR_API_KEY>"
+        GITHUB_PERSONAL_ACCESS_TOKEN: "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"
 
 clients:
   # Default model, when no model specified
