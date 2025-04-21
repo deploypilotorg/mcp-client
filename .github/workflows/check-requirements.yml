@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for git diff
       
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -23,25 +25,51 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           
-      - name: Get installed packages
-        id: installed-packages
+      - name: Get changed Python files
+        id: changed-files
         run: |
-          pip freeze > installed_packages.txt
-          echo "INSTALLED_PACKAGES=$(cat installed_packages.txt)" >> $GITHUB_ENV
+          # Get list of changed Python files
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            git fetch origin $GITHUB_BASE_REF
+            git diff --name-only origin/$GITHUB_BASE_REF...HEAD -- '*.py' > changed_files.txt
+          else
+            git diff --name-only HEAD~1 HEAD -- '*.py' > changed_files.txt
+          fi
+          echo "CHANGED_FILES=$(cat changed_files.txt)" >> $GITHUB_ENV
           
-      - name: Compare with requirements.txt
+      - name: Check for new imports
+        id: check-imports
         run: |
-          # Get packages from requirements.txt
+          # Create a temporary virtual environment
+          python -m venv /tmp/venv
+          source /tmp/venv/bin/activate
+          
+          # Install only the packages from requirements.txt
+          pip install -r requirements.txt
+          
+          # Get the list of installed packages
+          pip freeze > before_install.txt
+          
+          # Install the changed files to get their dependencies
+          if [ -s changed_files.txt ]; then
+            pip install -e .
+          fi
+          
+          # Get the new list of installed packages
+          pip freeze > after_install.txt
+          
+          # Find new packages that were installed
+          comm -13 <(sort before_install.txt) <(sort after_install.txt) > new_packages.txt
+          
+          # Compare with requirements.txt
           grep -v '^#' requirements.txt | cut -d'=' -f1 | sort > requirements_packages.txt
+          grep -v '^#' new_packages.txt | cut -d'=' -f1 | sort > new_packages_clean.txt
           
-          # Get packages from installed packages
-          grep -v '^#' installed_packages.txt | cut -d'=' -f1 | sort > installed_packages_clean.txt
-          
-          # Find packages that are installed but not in requirements.txt
-          comm -23 installed_packages_clean.txt requirements_packages.txt > missing_packages.txt
+          # Find packages that are new but not in requirements.txt
+          comm -23 new_packages_clean.txt requirements_packages.txt > missing_packages.txt
           
           if [ -s missing_packages.txt ]; then
-            echo "The following packages are installed but not listed in requirements.txt:"
+            echo "The following packages were added but not listed in requirements.txt:"
             cat missing_packages.txt
             echo "Please update requirements.txt with the missing packages."
             exit 1
