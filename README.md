@@ -1,56 +1,56 @@
-# MCP Client
+# GitHub Operations Agent
 
-HTTP-based client for connecting to the MCP server and interacting with GitHub repositories.
+A simple agent that helps you perform GitHub operations using natural language.
 
-## Features
+## Prerequisites
 
-- Connect to MCP servers over HTTP
-- Streamlit web interface for easy interaction
-- Command-line interface for terminal usage
-- GitHub repository analysis and exploration
+- Python 3.8+
+- An Anthropic API key
+- `mcp-agent` Python package
 
-## Installation
+## Setup
 
-1. Install the required dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+1. Clone this repository:
+```
+git clone <repository-url>
+cd <repository-directory>
+```
 
-2. Set your Anthropic API key in the `.env` file:
-   ```
-   ANTHROPIC_API_KEY=your_api_key_here
-   ```
+2. Install dependencies:
+```
+pip install mcp-agent python-dotenv
+```
+
+3. Create a `.env` file with your Anthropic API key:
+```
+ANTHROPIC_API_KEY=sk-ant-your-key-here
+```
 
 ## Usage
 
-### Streamlit Web Interface
+Run the GitHub operations agent:
+```
+python github_api_example.py
+```
 
-1. Run the Streamlit application:
-   ```
-   cd streamlit
-   streamlit run app.py
-   ```
+When running, you can:
+- Create branches
+- Create/edit files
+- Create pull requests
+- Check repository information
 
-2. Open your browser at `http://localhost:8501`
-3. Enter the MCP server URL (e.g., `http://localhost:8000`) and click "Connect to Server"
-4. Enter a GitHub repository URL and click "Analyze Repository"
-5. Start chatting with the assistant about the repository
+Example commands:
+- "Create a new branch called feature/improved-ui"
+- "Create a file called README.md with basic project information"
+- "Create a pull request from feature/improved-ui to main"
 
-### Command-Line Interface
+## Troubleshooting
 
-1. Run the client with the server URL:
-   ```
-   python client.py http://localhost:8000
-   ```
+If the agent gets stuck during initialization:
+- Verify your Anthropic API key is correct
+- Check your internet connection
+- Ensure the MCP server is accessible from your network
 
-2. Type your queries and press Enter
-3. Type 'quit' to exit
+## License
 
-## Examples
-
-Here are some example queries you can try:
-
-- "List all files in the repository"
-- "What does the main file do?"
-- "Execute 'git log' to see the commit history"
-- "Explain the purpose of this repository" 
+MIT 
