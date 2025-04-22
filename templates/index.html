@@ -3,289 +3,349 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub CLI Assistant</title>
+    <title>DeployPilot</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             min-height: 100vh;
+            background-color: #232323;
+            color: #e2b714;
+            font-family: 'Roboto Mono', monospace;
+        }
+        
+        .container-fluid {
+            padding: 2rem;
+        }
+        
+        .main-content {
+            display: flex;
+            gap: 1.5rem;
+            height: calc(100vh - 150px);
+        }
+        
+        .chat-container {
+            flex: 3;
             display: flex;
             flex-direction: column;
         }
         
-        .chat-container {
-            flex: 1;
+        .workspace-container {
+            flex: 2;
             display: flex;
             flex-direction: column;
-            max-height: calc(100vh - 200px);
+            background-color: #2c2c2c;
+            border-radius: 5px;
+            padding: 1rem;
         }
         
         .chat-history {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            min-height: 300px;
+            background-color: #2c2c2c;
+            border-radius: 5px;
+            padding: 1rem;
+            margin-bottom: 1rem;
         }
         
         .message {
-            padding: 10px 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            max-width: 85%;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
         }
         
         .user-message {
-            background-color: #007bff;
-            color: white;
-            align-self: flex-end;
-            margin-left: auto;
+            background-color: #4d3800;
+            color: #e2b714;
+            border-left: 3px solid #e2b714;
         }
         
         .assistant-message {
-            background-color: #e9ecef;
-            color: #212529;
+            background-color: #323232;
+            color: #eeeeee;
+            border-left: 3px solid #666666;
         }
         
         .chat-form {
             display: flex;
-            padding: 15px 0;
+            margin-bottom: 1rem;
+        }
+        
+        input, button {
+            background-color: #323232;
+            color: #eeeeee;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 5px;
+        }
+        
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px #e2b714;
+        }
+        
+        button {
+            background-color: #e2b714;
+            color: #232323;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            background-color: #c99c10;
+        }
+        
+        .status-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
         }
         
         .status-indicator {
             display: inline-block;
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            margin-right: 5px;
+            margin-right: 0.5rem;
         }
         
         .status-online {
-            background-color: #28a745;
+            background-color: #5cb85c;
         }
         
         .status-offline {
-            background-color: #dc3545;
+            background-color: #d9534f;
         }
         
         .status-error {
-            background-color: #ffc107;
+            background-color: #f0ad4e;
+        }
+        
+        h1, h2, h3, h4, h5 {
+            color: #e2b714;
+        }
+        
+        pre, code {
+            background-color: #3a3a3a;
+            color: #eeeeee;
+            border-radius: 3px;
+            padding: 0.2rem 0.4rem;
+            font-family: 'Roboto Mono', monospace;
         }
         
         pre {
+            padding: 0.75rem;
             white-space: pre-wrap;
-            word-wrap: break-word;
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 0.9em;
-        }
-        
-        code {
-            background-color: #f0f0f0;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-family: monospace;
+            word-break: break-all;
         }
         
         .thinking {
-            color: #6c757d;
+            color: #888888;
             font-style: italic;
         }
-
-        .workspace-section {
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
+        
         .file-list {
-            max-height: 200px;
-            overflow-y: auto;
-            background-color: #fff;
-            border: 1px solid #ced4da;
+            background-color: #323232;
             border-radius: 5px;
-            padding: 10px;
-            margin-top: 10px;
+            padding: 0.75rem;
+            margin-top: 0.5rem;
+            max-height: 250px;
+            overflow-y: auto;
+            font-family: 'Roboto Mono', monospace;
         }
-
+        
         .file-item {
-            padding: 3px 5px;
-            border-bottom: 1px solid #eee;
+            padding: 0.3rem 0.5rem;
+            border-bottom: 1px solid #3a3a3a;
+            color: #eeeeee;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
         }
-
+        
         .file-item:last-child {
             border-bottom: none;
         }
-
-        .tab-content {
-            padding-top: 15px;
+        
+        .file-icon {
+            margin-right: 5px;
+            color: #e2b714;
+            cursor: pointer;
+            user-select: none;
         }
+        
+        .folder-icon {
+            color: #e2b714;
+        }
+        
+        .file-name {
+            margin-left: 5px;
+        }
+        
+        .file-tree-item {
+            margin-left: 1.2rem;
+        }
+        
+        .directory-item {
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .folder-wrapper {
+            display: block;
+        }
+        
+        .folder-wrapper.collapsed > .file-tree-children {
+            display: none;
+        }
+        
+        .file-tree-children {
+            margin-left: 1.5rem;
+            border-left: 1px dotted #666;
+            padding-left: 0.5rem;
+        }
+        
+        .directory-item {
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .expander {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            line-height: 10px;
+            text-align: center;
+            font-size: 12px;
+            margin-right: 5px;
+            border: 1px solid #666;
+            border-radius: 2px;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .header {
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .examples-container {
+            margin-top: 1rem;
+        }
+        
+        .example-card {
+            background-color: #323232;
+            padding: 0.75rem;
+            border-radius: 5px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .example-card p {
+            margin-bottom: 0.5rem;
+            color: #eeeeee;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
-                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
-                </svg>
-                GitHub CLI Assistant
-            </a>
-            <div class="d-flex">
-                <div id="server-status" class="text-light d-flex align-items-center">
-                    <span class="status-indicator status-offline" id="status-dot"></span>
-                    <span id="status-text">Checking server...</span>
-                </div>
+    <div class="container-fluid">
+        <div class="header">
+            <h1>DeployPilot</h1>
+            <div class="status-container">
+                <span class="status-indicator status-offline" id="status-dot"></span>
+                <span id="status-text">Checking server...</span>
             </div>
         </div>
-    </nav>
-    
-    <div class="container mt-4">
-        <ul class="nav nav-tabs" id="mainTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="chat-tab" data-bs-toggle="tab" data-bs-target="#chat-panel" type="button" role="tab" aria-controls="chat-panel" aria-selected="true">Chat</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="workspace-tab" data-bs-toggle="tab" data-bs-target="#workspace-panel" type="button" role="tab" aria-controls="workspace-panel" aria-selected="false">Workspace</button>
-            </li>
-        </ul>
         
-        <div class="tab-content" id="mainTabContent">
-            <!-- Chat Panel -->
-            <div class="tab-pane fade show active" id="chat-panel" role="tabpanel" aria-labelledby="chat-tab">
-                <div class="chat-container">
-                    <div class="row mb-3">
-                        <div class="col-md-9">
-                            <h1>GitHub CLI Assistant</h1>
-                            <p>Ask questions about GitHub operations or how to deploy repositories using Docker.</p>
+        <div class="main-content">
+            <div class="chat-container">
+                <div class="chat-history" id="chat-history">
+                    {% for message in messages %}
+                        <div class="message {% if message.role == 'user' %}user-message{% else %}assistant-message{% endif %}">
+                            {{ message.content | safe }}
                         </div>
-                        <div class="col-md-3 text-end">
-                            <button id="clear-chat" class="btn btn-outline-danger">Clear Chat</button>
-                        </div>
-                    </div>
-                    
-                    <div class="chat-history" id="chat-history">
-                        {% for message in messages %}
-                            <div class="message {% if message.role == 'user' %}user-message{% else %}assistant-message{% endif %}">
-                                {{ message.content | safe }}
-                            </div>
-                        {% endfor %}
-                    </div>
-                    
-                    <form id="chat-form" class="chat-form">
-                        <input type="text" id="user-query" class="form-control me-2" placeholder="Ask about GitHub operations..." required>
-                        <button type="submit" class="btn btn-primary">Send</button>
-                    </form>
+                    {% endfor %}
                 </div>
                 
-                <div class="container mt-4">
-                    <h3>Examples you can ask:</h3>
+                <form id="chat-form" class="chat-form">
+                    <input type="text" id="user-query" class="form-control me-2" placeholder="Ask about GitHub operations..." required>
+                    <button type="submit" class="btn">Send</button>
+                </form>
+                
+                <div class="examples-container">
+                    <h5>Examples:</h5>
                     <div class="row">
                         <div class="col-md-4">
-                            <div class="card mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title">Creating Branches</h5>
-                                    <p class="card-text">"Create a new branch called 'feature/improved-ui'"</p>
-                                    <button class="btn btn-sm btn-outline-primary example-query">Try this</button>
-                                </div>
+                            <div class="example-card">
+                                <p>"Create a new branch called 'feature/improved-ui'"</p>
+                                <button class="btn btn-sm example-query">Try this</button>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="card mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title">Pull Requests</h5>
-                                    <p class="card-text">"Create a pull request for my current branch"</p>
-                                    <button class="btn btn-sm btn-outline-primary example-query">Try this</button>
-                                </div>
+                            <div class="example-card">
+                                <p>"Create a pull request for my current branch"</p>
+                                <button class="btn btn-sm example-query">Try this</button>
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="card mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title">Repository Info</h5>
-                                    <p class="card-text">"Show me the details of the repository"</p>
-                                    <button class="btn btn-sm btn-outline-primary example-query">Try this</button>
-                                </div>
+                            <div class="example-card">
+                                <p>"Clone the repository deploypilotorg/example-repo"</p>
+                                <button class="btn btn-sm example-query">Try this</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Workspace Panel -->
-            <div class="tab-pane fade" id="workspace-panel" role="tabpanel" aria-labelledby="workspace-tab">
-                <div class="mt-4">
-                    <h1>Agent Workspace</h1>
-                    <p>This is where the agent clones repositories and deploys applications.</p>
-                    
-                    <div class="workspace-section">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h4>Workspace Information</h4>
-                            <button id="refresh-workspace" class="btn btn-sm btn-outline-info">Refresh</button>
-                        </div>
-                        
-                        <div class="mt-2">
-                            <div class="row">
-                                <div class="col-md-9">
-                                    <p><strong>Path:</strong> <span id="workspace-path">{{ workspace_info.workspace_path if workspace_info.workspace_path else 'Not available' }}</span></p>
-                                    <p><strong>Status:</strong> <span id="workspace-status">{{ 'Active' if workspace_info.workspace_exists else 'Not created' }}</span></p>
-                                </div>
-                                <div class="col-md-3 text-end">
-                                    <button id="reset-workspace" class="btn btn-warning">Reset Workspace</button>
-                                </div>
-                            </div>
-                            
-                            <h5 class="mt-3">Files and Directories:</h5>
-                            <div class="file-list" id="file-list">
-                                {% if workspace_info.files and workspace_info.files|length > 0 %}
-                                    {% for file in workspace_info.files %}
-                                        <div class="file-item">{{ file }}</div>
-                                    {% endfor %}
-                                {% else %}
-                                    <div class="file-item text-muted">No files in workspace</div>
-                                {% endif %}
-                            </div>
-                        </div>
+            <div class="workspace-container">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4>Workspace</h4>
+                    <div class="action-buttons">
+                        <button id="refresh-workspace" class="btn btn-sm">Refresh</button>
+                        <button id="reset-workspace" class="btn btn-sm">Reset</button>
+                        <button id="clear-chat" class="btn btn-sm">Clear Chat</button>
                     </div>
-                    
-                    <div class="workspace-section">
-                        <h4>Deployment Commands</h4>
-                        <p>Here are some example commands you can ask the agent to run in the workspace:</p>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="card mb-3">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Clone and Deploy</h5>
-                                        <code>Clone the repository deploypilotorg/example-repo and create a Docker container for it</code>
-                                        <button class="btn btn-sm btn-outline-primary mt-2 workspace-query">Try this</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="card mb-3">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Docker Compose</h5>
-                                        <code>Set up a docker-compose.yml file for the example repository that exposes port 80</code>
-                                        <button class="btn btn-sm btn-outline-primary mt-2 workspace-query">Try this</button>
-                                    </div>
-                                </div>
-                            </div>
+                </div>
+                
+                <div>
+                    <p><strong>Path:</strong> <span id="workspace-path">{{ workspace_info.workspace_path if workspace_info.workspace_path else 'Not available' }}</span></p>
+                    <p><strong>Status:</strong> <span id="workspace-status">{{ 'Active' if workspace_info.workspace_exists else 'Not created' }}</span></p>
+                </div>
+                
+                <h5 class="mt-3">Files:</h5>
+                <div class="file-list" id="file-list">
+                    {% if workspace_info.files and workspace_info.files|length > 0 %}
+                        <!-- File tree will be rendered by JavaScript -->
+                    {% else %}
+                        <div class="file-item">
+                            <span>No files in workspace</span>
                         </div>
-                    </div>
+                    {% endif %}
+                </div>
+                
+                <h5 class="mt-3">Deploy Commands:</h5>
+                <div class="example-card mt-2">
+                    <p><code>Set up a docker-compose.yml file for the example repository that exposes port 80</code></p>
+                    <button class="btn btn-sm workspace-query">Try this</button>
                 </div>
             </div>
         </div>
     </div>
-    
-    <footer class="bg-dark text-light mt-5 py-3">
-        <div class="container">
-            <p class="mb-0">Target Repository: <a href="https://github.com/deploypilotorg/example-repo" target="_blank" class="text-info">https://github.com/deploypilotorg/example-repo</a></p>
-        </div>
-    </footer>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -341,15 +401,11 @@
                         fileList.innerHTML = '';
                         
                         if (data.files && data.files.length > 0) {
-                            data.files.forEach(file => {
-                                const fileDiv = document.createElement('div');
-                                fileDiv.className = 'file-item';
-                                fileDiv.textContent = file;
-                                fileList.appendChild(fileDiv);
-                            });
+                            // Recursively render the file tree
+                            renderFileTree(fileList, data.files);
                         } else {
                             const emptyDiv = document.createElement('div');
-                            emptyDiv.className = 'file-item text-muted';
+                            emptyDiv.className = 'file-item';
                             emptyDiv.textContent = 'No files in workspace';
                             fileList.appendChild(emptyDiv);
                         }
@@ -357,6 +413,78 @@
                     .catch(error => {
                         console.error('Error:', error);
                     });
+            }
+            
+            // Render file tree recursively
+            function renderFileTree(container, items) {
+                items.forEach(item => {
+                    if (item.type === 'directory') {
+                        // Create a wrapper div for the folder and its children
+                        const folderWrapper = document.createElement('div');
+                        folderWrapper.className = 'folder-wrapper';
+                        
+                        // Create the folder item element
+                        const itemEl = document.createElement('div');
+                        itemEl.className = 'file-item directory-item';
+                        itemEl.dataset.path = item.path;
+                        
+                        // Add expander if directory has children
+                        if (item.children && item.children.length > 0) {
+                            const expander = document.createElement('span');
+                            expander.className = 'expander';
+                            expander.textContent = '-';
+                            itemEl.appendChild(expander);
+                        }
+                        
+                        const folderIcon = document.createElement('i');
+                        folderIcon.className = 'file-icon folder-icon';
+                        folderIcon.textContent = '📁';
+                        itemEl.appendChild(folderIcon);
+                        
+                        const nameSpan = document.createElement('span');
+                        nameSpan.className = 'file-name';
+                        nameSpan.textContent = item.name;
+                        itemEl.appendChild(nameSpan);
+                        
+                        folderWrapper.appendChild(itemEl);
+                        
+                        // Create a container for children
+                        if (item.children && item.children.length > 0) {
+                            const childrenContainer = document.createElement('div');
+                            childrenContainer.className = 'file-tree-children';
+                            renderFileTree(childrenContainer, item.children);
+                            folderWrapper.appendChild(childrenContainer);
+                            
+                            // Make folder clickable to toggle
+                            itemEl.addEventListener('click', function(e) {
+                                folderWrapper.classList.toggle('collapsed');
+                                const expanderEl = this.querySelector('.expander');
+                                if (expanderEl) {
+                                    expanderEl.textContent = folderWrapper.classList.contains('collapsed') ? '+' : '-';
+                                }
+                            });
+                        }
+                        
+                        container.appendChild(folderWrapper);
+                    } else {
+                        // Create file item
+                        const itemEl = document.createElement('div');
+                        itemEl.className = 'file-item';
+                        itemEl.dataset.path = item.path;
+                        
+                        const fileIcon = document.createElement('i');
+                        fileIcon.className = 'file-icon';
+                        fileIcon.textContent = '📄';
+                        
+                        const nameSpan = document.createElement('span');
+                        nameSpan.className = 'file-name';
+                        nameSpan.textContent = item.name;
+                        
+                        itemEl.appendChild(fileIcon);
+                        itemEl.appendChild(nameSpan);
+                        container.appendChild(itemEl);
+                    }
+                });
             }
             
             // Initial status check
@@ -393,7 +521,7 @@
                 const thinkingDiv = document.createElement('div');
                 thinkingDiv.className = 'message assistant-message thinking';
                 thinkingDiv.id = 'thinking-indicator';
-                thinkingDiv.textContent = 'Thinking...';
+                thinkingDiv.textContent = 'Let me cook...';
                 chatHistory.appendChild(thinkingDiv);
                 chatHistory.scrollTop = chatHistory.scrollHeight;
             }
@@ -471,8 +599,6 @@
             workspaceButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const query = this.previousElementSibling.textContent;
-                    // Switch to chat tab
-                    document.getElementById('chat-tab').click();
                     userInput.value = query;
                     submitQuery(query);
                 });

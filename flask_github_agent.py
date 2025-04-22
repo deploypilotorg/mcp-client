@@ -151,6 +151,7 @@ def workspace_info():
     try:
         response = requests.get(f"{API_URL}/workspace_info")
         if response.status_code == 200:
+            # Just pass the complete response from the API server
             return jsonify(response.json())
         else:
             return jsonify({"error": f"Server returned status code {response.status_code}"})
