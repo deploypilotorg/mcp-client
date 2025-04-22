@@ -1,4 +1,7 @@
+fastapi
+uvicorn
+pydantic
 python-dotenv
+fast-agent-mcp
+aiohttp
 anthropic
-mcp-agent
-asyncio
