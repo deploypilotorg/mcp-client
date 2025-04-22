@@ -139,15 +139,44 @@ async def workspace_info():
     """Return information about the agent workspace"""
     workspace_exists = os.path.exists(WORKSPACE_DIR)
     
-    # List files in workspace if it exists
-    workspace_files = []
+    # Generate a nested file tree instead of a flat list
+    def get_directory_tree(path, rel_path=""):
+        result = []
+        items = sorted(os.listdir(path))
+        
+        for item in items:
+            item_path = os.path.join(path, item)
+            if rel_path:
+                item_rel_path = os.path.join(rel_path, item)
+            else:
+                item_rel_path = item
+                
+            if os.path.isdir(item_path):
+                children = get_directory_tree(item_path, item_rel_path)
+                result.append({
+                    "name": item,
+                    "path": item_rel_path,
+                    "type": "directory",
+                    "children": children
+                })
+            else:
+                result.append({
+                    "name": item,
+                    "path": item_rel_path,
+                    "type": "file"
+                })
+        
+        return result
+    
+    # Get file tree if workspace exists
+    file_tree = []
     if workspace_exists:
-        workspace_files = os.listdir(WORKSPACE_DIR)
+        file_tree = get_directory_tree(WORKSPACE_DIR)
     
     return {
         "workspace_path": str(WORKSPACE_DIR),
         "workspace_exists": workspace_exists,
-        "files": workspace_files
+        "files": file_tree
     }
 
 @app.post("/reset_workspace")

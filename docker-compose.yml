@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./.env:/app/.env
+      - agent_workspace_data:/app/agent_workspace
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    restart: unless-stopped
+
+volumes:
+  agent_workspace_data: 

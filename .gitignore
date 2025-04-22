@@ -24,3 +24,6 @@ build/
 *.log 
 agent_workspace/
 *.jsonl
+
+
+.DS_Store

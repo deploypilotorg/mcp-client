@@ -1,56 +1,46 @@
-# GitHub Operations Agent
+# Containerized Agent API
 
-A simple agent that helps you perform GitHub operations using natural language.
+This project provides a containerized API for running an AI agent that interacts with GitHub repositories through the GitHub CLI.
 
 ## Prerequisites
 
-- Python 3.8+
+- Docker and Docker Compose installed on your system
 - An Anthropic API key
-- `mcp-agent` Python package
 
 ## Setup
 
-1. Clone this repository:
+1. Create a `.env` file in the project root with your Anthropic API key:
+   ```
+   ANTHROPIC_API_KEY=your_anthropic_api_key_here
+   ```
+
+2. Build and start the container:
+   ```bash
+   docker-compose up -d
+   ```
+
+3. The API will be available at http://localhost:8000
+
+## API Endpoints
+
+- `POST /query`: Submit a query to the agent
+- `GET /result/{query_id}`: Get the result of a query
+- `GET /workspace_info`: Get information about the agent workspace
+- `POST /reset_workspace`: Reset the agent workspace
+
+## Security Benefits
+
+- The agent workspace is fully containerized, isolating it from your host system
+- All GitHub operations happen within the container
+- Docker volume ensures data persistence while maintaining isolation
+
+## Stopping the Service
+
+```bash
+docker-compose down
 ```
-git clone <repository-url>
-cd <repository-directory>
-```
 
-2. Install dependencies:
-```
-pip install mcp-agent python-dotenv
-```
-
-3. Create a `.env` file with your Anthropic API key:
-```
-ANTHROPIC_API_KEY=sk-ant-your-key-here
-```
-
-## Usage
-
-Run the GitHub operations agent:
-```
-python github_api_example.py
-```
-
-When running, you can:
-- Create branches
-- Create/edit files
-- Create pull requests
-- Check repository information
-
-Example commands:
-- "Create a new branch called feature/improved-ui"
-- "Create a file called README.md with basic project information"
-- "Create a pull request from feature/improved-ui to main"
-
-## Troubleshooting
-
-If the agent gets stuck during initialization:
-- Verify your Anthropic API key is correct
-- Check your internet connection
-- Ensure the MCP server is accessible from your network
-
-## License
-
-MIT 
+To completely remove the persistent workspace data:
+```bash
+docker-compose down -v
+``` 
