@@ -1,12 +1,18 @@
 import asyncio
 import os
 import shutil
+import logging
+import traceback
 from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import FastAPI, BackgroundTasks
 from pydantic import BaseModel
 import uvicorn
 from mcp_agent.core.fastagent import FastAgent
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Load API key from .env file
 dotenv_path = Path(__file__).parent / '.env'
@@ -89,6 +95,7 @@ async def run_agent(query_id: str, query_text: str):
     # Verify API key is loaded from .env
     api_key = os.getenv("ANTHROPIC_API_KEY")
     if not api_key:
+        logger.error("ANTHROPIC_API_KEY not found in .env file")
         active_tasks[query_id] = {"status": "error", "result": "Error: ANTHROPIC_API_KEY not found in .env file"}
         return
     
@@ -96,11 +103,16 @@ async def run_agent(query_id: str, query_text: str):
     os.environ["ANTHROPIC_API_KEY"] = api_key
     
     try:
+        # Log starting agent
+        logger.info(f"Starting agent for query_id: {query_id}, text: {query_text}")
+        
         # Create a new agent
         fast = FastAgent("GitHub CLI Agent")
         
         # Format the instructions with the workspace directory
         formatted_instructions = AGENT_INSTRUCTIONS.format(workspace_dir=WORKSPACE_DIR)
+        
+        logger.info(f"Initialized FastAgent for query_id: {query_id}")
         
         @fast.agent(
             instruction=formatted_instructions,
@@ -108,22 +120,36 @@ async def run_agent(query_id: str, query_text: str):
             model="sonnet"
         )
         async def agent_query():
-            async with fast.run() as agent:
-                result = await agent(query_text)
-                return result
+            try:
+                logger.info(f"Agent running for query_id: {query_id}")
+                async with fast.run() as agent:
+                    logger.info(f"Executing agent query for query_id: {query_id}")
+                    result = await agent(query_text)
+                    logger.info(f"Agent query completed for query_id: {query_id}")
+                    return result
+            except Exception as e:
+                logger.error(f"Error inside agent_query for {query_id}: {str(e)}")
+                logger.error(traceback.format_exc())
+                raise
         
+        logger.info(f"Calling agent_query for query_id: {query_id}")
         result = await agent_query()
+        logger.info(f"Got result for query_id: {query_id}: {result[:100]}...")
         active_tasks[query_id] = {"status": "completed", "result": result}
     except Exception as e:
+        logger.error(f"Error in run_agent for {query_id}: {str(e)}")
+        logger.error(traceback.format_exc())
         active_tasks[query_id] = {"status": "error", "result": f"Error: {str(e)}"}
 
 @app.post("/query")
 async def create_query(query: Query, background_tasks: BackgroundTasks):
     query_id = f"query_{len(active_tasks) + 1}"
+    logger.info(f"Received new query: {query_id} - {query.text[:50]}...")
     active_tasks[query_id] = {"status": "processing", "result": None}
     
     # Run the agent in a background task
     background_tasks.add_task(run_agent, query_id, query.text)
+    logger.info(f"Started background task for query_id: {query_id}")
     
     return {"query_id": query_id, "status": "processing"}
 
@@ -132,6 +158,7 @@ async def get_result(query_id: str):
     if query_id not in active_tasks:
         return {"status": "not_found"}
     
+    logger.info(f"Returning result for query_id: {query_id}, status: {active_tasks[query_id]['status']}")
     return active_tasks[query_id]
 
 @app.get("/workspace_info")
