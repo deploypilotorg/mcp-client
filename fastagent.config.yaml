@@ -4,28 +4,19 @@ mcp:
       command: "uvx"
       args: ["cli-mcp-server"]
       env:
-        ALLOWED_DIR: "/Users/zaidalsaheb/projects/example-repo"
+        ALLOWED_DIR: "/Users/zaidalsaheb/projects/mcp-client/agent_workspace"
         ALLOWED_COMMANDS: "all"
         ALLOWED_FLAGS: "all"
         MAX_COMMAND_LENGTH: "1024"
-        COMMAND_TIMEOUT: "60"
+        COMMAND_TIMEOUT: "300"
         GITHUB_API_KEY: "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"
         EXAMPLE_REPO_URL: "https://github.com/deploypilotorg/example-repo"
         ALLOW_SHELL_OPERATORS: "true"
         GIT_TERMINAL_PROMPT: "0"
         GIT_ASKPASS: "/bin/echo"
-    
-    github:
-      command: "docker"
-      args:
-        - "run"
-        - "-i"
-        - "--rm"
-        - "-e"
-        - "GITHUB_PERSONAL_ACCESS_TOKEN"
-        - "ghcr.io/github/github-mcp-server"
-      env:
-        GITHUB_PERSONAL_ACCESS_TOKEN: "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"
+    docker-mcp:
+      command: "uvx"
+      args: ["docker-mcp"]
 
 clients:
   # Default model, when no model specified

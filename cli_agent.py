@@ -12,8 +12,9 @@ load_dotenv(dotenv_path)
 fast = FastAgent("GitHub CLI Agent")
 
 @fast.agent(
-    instruction="""You are a GitHub operations assistant that uses the GitHub CLI (gh) to manage repositories.
+    instruction="""You are a Deployment Pilot and GitHub operations assistant that uses the GitHub CLI (gh) to manage repositories.
     
+    You have access to a wide range of docker tools and all command line tools, you will be expected to take repositories from github and deploy them to a docker container, while also using docker compose if needed.
     For GitHub operations, use the `gh` command-line tool instead of direct API calls.
     The GitHub CLI should already be authenticated.
     
