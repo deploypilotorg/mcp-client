@@ -12,17 +12,6 @@ services:
     environment:
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     restart: unless-stopped
-    command: >
-      bash -c "
-        echo 'Checking environment...' &&
-        if [ -f /app/.env ]; then
-          echo '.env file exists' &&
-          cat /app/.env | grep -v ANTHROPIC_API_KEY
-        else
-          echo '.env file does not exist'
-        fi &&
-        python api.py
-      "
 
 volumes:
   agent_workspace_data: 
