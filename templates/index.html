@@ -12,6 +12,26 @@
             color: #e2b714;
             font-family: 'Roboto Mono', monospace;
         }
+
+        .userquery {
+            background-color: #323232;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 5px;
+            min-width: 40vw;
+            color: white; /* Text color */
+        }
+        
+        .userquery::placeholder {
+            color: #aaaaaa; /* Gray placeholder */
+            opacity: 1; /* Prevent Firefox from reducing opacity */
+        }
+        
+        .userquery:focus {
+            outline: none; /* Optional: remove default blue outline */
+            background-color: #323232; /* Prevent color inversion */
+            color: white;
+        }
         
         .container-fluid {
             padding: 2rem;
@@ -27,6 +47,8 @@
             flex: 3;
             display: flex;
             flex-direction: column;
+            max-width: 47vw;
+            max-height: 79vh;
         }
         
         .workspace-container {
@@ -36,6 +58,8 @@
             background-color: #2c2c2c;
             border-radius: 5px;
             padding: 1rem;
+            width: 47vw;
+            max-height: 70vh;
         }
         
         .chat-history {
@@ -73,7 +97,7 @@
         
         input, button {
             background-color: #323232;
-            color: #eeeeee;
+            color: rgb(178, 174, 174);
             border: none;
             padding: 0.75rem;
             border-radius: 5px;
@@ -151,7 +175,7 @@
             border-radius: 5px;
             padding: 0.75rem;
             margin-top: 0.5rem;
-            max-height: 250px;
+            max-height: 80%;
             overflow-y: auto;
             font-family: 'Roboto Mono', monospace;
         }
@@ -257,6 +281,12 @@
         .btn-sm {
             padding: 0.25rem 0.5rem;
             font-size: 0.875rem;
+            color:rgb(178, 174, 174);
+        }
+
+        .sendbutton {
+            color:rgb(171, 171, 171);
+            font-wrgb(164, 164, 164)old;
         }
         
         @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
@@ -283,33 +313,9 @@
                 </div>
                 
                 <form id="chat-form" class="chat-form">
-                    <input type="text" id="user-query" class="form-control me-2" placeholder="Ask about GitHub operations..." required>
-                    <button type="submit" class="btn">Send</button>
+                    <input type="text" id="user-query" class="form-control userquery me-2" placeholder="Ask about GitHub operations..." required>
+                    <button type="submit" class="btn sendbutton">Send</button>
                 </form>
-                
-                <div class="examples-container">
-                    <h5>Examples:</h5>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="example-card">
-                                <p>"Create a new branch called 'feature/improved-ui'"</p>
-                                <button class="btn btn-sm example-query">Try this</button>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="example-card">
-                                <p>"Create a pull request for my current branch"</p>
-                                <button class="btn btn-sm example-query">Try this</button>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="example-card">
-                                <p>"Clone the repository deploypilotorg/example-repo"</p>
-                                <button class="btn btn-sm example-query">Try this</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
             
             <div class="workspace-container">
@@ -336,12 +342,6 @@
                             <span>No files in workspace</span>
                         </div>
                     {% endif %}
-                </div>
-                
-                <h5 class="mt-3">Deploy Commands:</h5>
-                <div class="example-card mt-2">
-                    <p><code>Set up a docker-compose.yml file for the example repository that exposes port 80</code></p>
-                    <button class="btn btn-sm workspace-query">Try this</button>
                 </div>
             </div>
         </div>
