@@ -2,9 +2,9 @@ name: Run Tests
 
 on:
   push:
-    branches: [main, github-workflow]
+    branches: [main, tests]
   pull_request:
-    branches: [main, github-workflow]
+    branches: [main, tests]
 
 jobs:
   test:
