@@ -5,3 +5,7 @@ python-dotenv
 fast-agent-mcp
 aiohttp
 anthropic
+
+pytest
+pytest-asyncio
+httpx
